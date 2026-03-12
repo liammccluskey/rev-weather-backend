@@ -5,6 +5,7 @@ import com.example.backend.entities.Weather;
 import com.example.backend.services.WeatherService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,8 @@ public class WeatherController {
     public ResponseEntity<Weather> createBook(@Valid @RequestBody WeatherDTO weatherDTO) {
         Weather weather = weatherService.createWeather(weatherDTO);
 
-        return ResponseEntity.ok(weather);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(weather);
     }
 }

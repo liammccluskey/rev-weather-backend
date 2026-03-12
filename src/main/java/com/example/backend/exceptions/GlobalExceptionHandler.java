@@ -3,10 +3,12 @@ package com.example.backend.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -53,6 +55,27 @@ public class GlobalExceptionHandler {
                                 "status", status.value(),
                                 "error", status.getReasonPhrase(),
                                 "message", ex.getReason()
+                        )
+                );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
+
+        Map<String, String> errors = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .collect(Collectors.toMap(
+                        fieldError -> fieldError.getField(),
+                        fieldError -> fieldError.getDefaultMessage()
+                ));
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        Map.of(
+                                "status", HttpStatus.BAD_REQUEST.value(),
+                                "error", "Validation Failed",
+                                "messages", errors
                         )
                 );
     }
