@@ -13,8 +13,8 @@ public interface WeatherRepository extends JpaRepository<Weather, Long> {
 
     @Query("""
         SELECT w FROM Weather w
-        WHERE (:location IS NULL OR LOWER(w.cityName) = LOWER(:cityName))
-        AND (:region IS NULL OR LOWER(w.cityName) = LOWER(:cityName))
+        WHERE (:cityName IS NULL OR LOWER(w.cityName) = LOWER(:cityName))
+        AND (:region IS NULL OR LOWER(w.region) = LOWER(:region))
     """)
     List<Weather> findWeathers(@Param("cityName") String cityName, @Param("region") String region);
 }
